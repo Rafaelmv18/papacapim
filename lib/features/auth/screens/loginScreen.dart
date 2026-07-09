@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:papacapim/features/auth/screens/registerScreen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -59,10 +60,10 @@ class LoginScreen extends StatelessWidget {
 
                 ElevatedButton(
                   onPressed: () {
-                    // Aqui depois faremos a navegação que abre a tela de Cadastro
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Indo para a tela de cadastro...'),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RegisterScreen(),
                       ),
                     );
                   },
