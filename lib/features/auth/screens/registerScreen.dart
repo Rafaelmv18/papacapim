@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  String name = '';
+  String email = '';
+  String password = '';
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +56,7 @@ class RegisterScreen extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.pushReplacementNamed(context, '/login');
                   },
                   child: const Text('Voltar'),
                 ),
@@ -56,17 +65,29 @@ class RegisterScreen extends StatelessWidget {
                 ), // Espaço de 12 pixels entre os dois botões
                 ElevatedButton(
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Cadastro realizado com sucesso!'),
-                        backgroundColor: Colors
-                            .green, // Deixa a barra verde (combina com o Papacapim)
-                        duration: Duration(
-                          seconds: 2,
-                        ), // A mensagem vai sumir sozinha após 2 segundos
-                      ),
-                    );
-                    Navigator.pop(context);
+                    if (name.isNotEmpty &&
+                        email.isNotEmpty &&
+                        password.isNotEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Cadastro realizado com sucesso!'),
+                          backgroundColor: Colors
+                              .green, // Deixa a barra verde (combina com o Papacapim)
+                          duration: Duration(
+                            seconds: 2,
+                          ), // A mensagem vai sumir sozinha após 2 segundos
+                        ),
+                      );
+                      Navigator.pushReplacementNamed(context, '/login');
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Preencha todos os campos!'),
+                          backgroundColor: Colors.red,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
                   },
                   child: const Text('Finalizar Cadastro'),
                 ),
