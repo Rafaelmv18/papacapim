@@ -1,84 +1,89 @@
 import 'package:flutter/material.dart';
-import 'package:papacapim/features/auth/screens/registerScreen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  String email = '';
+  String password = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          //centraliza os elementos na tela
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Papacapim',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-              ),
-            ),
-            const SizedBox(height: 32),
-            const TextField(
-              decoration: InputDecoration(
-                labelText: 'Login',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const TextField(
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Senha',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment
-                  .center, // Centraliza os botões na horizontal
+      body: SingleChildScrollView(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Simulação exigida no roteiro: avisa que logou e vai para o feed
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Simulando Login... Redirecionando para o Feed',
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text('Entrar'),
-                ),
-                const SizedBox(
-                  width: 40,
-                ), // Espaço de 12 pixels entre os dois botões
-
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const RegisterScreen(),
-                      ),
-                    );
-                  },
-                  // Se quiser mudar a cor de APENAS um botão específico para diferenciar do tema:
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.green.shade100, // Um verde bem clarinho
-                    foregroundColor:
-                        Colors.green.shade900, // Texto verde escuro
+                const Text(
+                  'Papacapim',
+                  style: TextStyle(
+                    fontSize: 32.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
                   ),
-                  child: const Text('Cadastrar'),
+                ),
+                const SizedBox(height: 32.0),
+                TextField(
+                  onChanged: (text) {
+                    email = text;
+                  },
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                TextField(
+                  onChanged: (text) {
+                    password = text;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
+                  ),
+                  obscureText: true,
+                ),
+                const SizedBox(height: 24.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        if (email == 'a@a.com' && password == 'a') {
+                          Navigator.pushReplacementNamed(context, '/home');
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Email ou senha incorretos'),
+                            ),
+                          );
+                        }
+                        // Lógica de login aqui
+                      },
+                      child: const Text('Login'),
+                    ),
+                    const SizedBox(width: 40.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/register');
+                      },
+                      child: const Text('Register'),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
