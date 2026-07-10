@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ElevatedButton(
                       onPressed: () {
                         if (email == 'a@a.com' && password == 'a') {
-                          Navigator.pushReplacementNamed(context, '/home');
+                          Navigator.pushReplacementNamed(context, '/feed');
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
