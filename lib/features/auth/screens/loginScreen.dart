@@ -23,14 +23,19 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Papacapim',
-                  style: TextStyle(
-                    fontSize: 32.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green,
-                  ),
+                Image.network(
+                  'https://cdn-icons-png.flaticon.com/512/616/616408.png',
+                  width: 100,
+                  height: 100,
                 ),
+                // const Text(
+                //   'Papacapim',
+                //   style: TextStyle(
+                //     fontSize: 32.0,
+                //     fontWeight: FontWeight.bold,
+                //     color: Colors.green,
+                //   ),
+                // ),
                 const SizedBox(height: 32.0),
                 TextField(
                   onChanged: (text) {
