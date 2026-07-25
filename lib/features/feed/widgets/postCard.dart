@@ -24,32 +24,38 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool isLiked = false;
-  bool isFollowing = false; // Controla o estado visual do botão seguir
+  bool isFollowing = false;
 
   @override
   Widget build(BuildContext context) {
+    // Acessa o tema global
+    final theme = Theme.of(context);
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
+      elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Cabeçalho: Foto, Nome, Data e Botão Seguir
+            // Cabeçalho: Foto, Nome, Data e Botão Seguir / Opções
             Row(
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundColor: Colors.green.shade100,
+                  backgroundColor: theme.colorScheme.primary.withOpacity(0.15),
                   backgroundImage: widget.userImageUrl != null
                       ? NetworkImage(widget.userImageUrl!)
                       : null,
                   child: widget.userImageUrl == null
                       ? Text(
                           widget.userName[0].toUpperCase(),
-                          style: const TextStyle(color: Colors.green),
+                          style: TextStyle(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         )
                       : null,
                 ),
@@ -62,7 +68,7 @@ class _PostCardState extends State<PostCard> {
                         widget.userName,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: 15,
                         ),
                       ),
                       Text(
@@ -76,6 +82,7 @@ class _PostCardState extends State<PostCard> {
                   ),
                 ),
 
+                // Botão "Seguir" na aba Explorar
                 if (widget.showFollowButton)
                   TextButton(
                     onPressed: () {
@@ -94,7 +101,9 @@ class _PostCardState extends State<PostCard> {
                       );
                     },
                     style: TextButton.styleFrom(
-                      foregroundColor: isFollowing ? Colors.grey : Colors.green,
+                      foregroundColor: isFollowing
+                          ? Colors.grey
+                          : theme.colorScheme.primary,
                     ),
                     child: Text(
                       isFollowing ? 'Seguindo' : 'Seguir',
@@ -102,10 +111,10 @@ class _PostCardState extends State<PostCard> {
                     ),
                   ),
 
-                // Se não for para mostrar o botão Seguir, mostra as opções do post
+                // Opções de post na aba Seguindo
                 if (!widget.showFollowButton)
                   IconButton(
-                    icon: const Icon(Icons.more_vert),
+                    icon: const Icon(Icons.more_vert, color: Colors.grey),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -139,10 +148,11 @@ class _PostCardState extends State<PostCard> {
             ],
             const Divider(height: 24),
 
-            // Barra de Ações: Curtir e Responder
+            // Barra de Ações: Curtir, Responder e Compartilhar
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
+                // Curtir
                 TextButton.icon(
                   onPressed: () {
                     setState(() {
@@ -158,6 +168,8 @@ class _PostCardState extends State<PostCard> {
                     style: TextStyle(color: isLiked ? Colors.red : Colors.grey),
                   ),
                 ),
+
+                // Responder
                 TextButton.icon(
                   onPressed: () {
                     _showReplyDialog(context);
@@ -168,22 +180,26 @@ class _PostCardState extends State<PostCard> {
                     style: TextStyle(color: Colors.grey),
                   ),
                 ),
+
+                // Compartilhar
                 TextButton.icon(
                   onPressed: () {
-                    // Exibe a mensagem de que o link foi copiado ou compartilhado
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
+                      SnackBar(
+                        content: const Text(
                           'Link copiado para a área de transferência!',
+                          style: TextStyle(color: Colors.white),
                         ),
-                        backgroundColor: Colors.green,
-                        duration: Duration(seconds: 1),
+                        backgroundColor: theme.colorScheme.primary,
+                        duration: const Duration(seconds: 1),
                       ),
                     );
                   },
-                  // 👇 Mudança aqui: usamos Icons.share para o símbolo correto de compartilhar
                   icon: const Icon(Icons.share, color: Colors.grey),
-                  label: const Text('Compartilhar'),
+                  label: const Text(
+                    'Compartilhar',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
               ],
             ),
@@ -200,10 +216,7 @@ class _PostCardState extends State<PostCard> {
         return AlertDialog(
           title: Text('Responder a ${widget.userName}'),
           content: const TextField(
-            decoration: InputDecoration(
-              hintText: 'Escreva sua resposta...',
-              border: OutlineInputBorder(),
-            ),
+            decoration: InputDecoration(hintText: 'Escreva sua resposta...'),
             maxLines: 3,
           ),
           actions: [

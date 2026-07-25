@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:papacapim/core/theme/appTheme.dart';
 import 'package:papacapim/features/auth/screens/loginScreen.dart';
 import 'package:papacapim/features/auth/screens/registerScreen.dart';
 import 'package:papacapim/features/feed/screens/feedScreen.dart';
@@ -12,6 +13,7 @@ class PapacapimApp extends StatelessWidget {
     return MaterialApp(
       title: 'Papacapim',
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.darkTheme,
 
       routes: {
         '/': (context) => const LoginScreen(),

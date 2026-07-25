@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import '../widgets/postCard.dart'; // Importa o widget do cartão que criamos
+import 'package:papacapim/features/feed/widgets/postCard.dart';
 
 class ExplorarScreen extends StatelessWidget {
   const ExplorarScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 1. Criamos uma lista fictícia de publicações (Mocks) para apresentar na interface
     final List<Map<String, String?>> mockPosts = [
       {
         'userName': 'Maria Silva',
@@ -25,7 +24,7 @@ class ExplorarScreen extends StatelessWidget {
             'Alguém mais está a ter problemas em configurar as rotas do Laravel com o Supabase? Aceito sugestões!',
         'userImageUrl':
             'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
-        'postImageUrl': null, // Post sem imagem anexada
+        'postImageUrl': null,
       },
       {
         'userName': 'Ana Júlia',
@@ -36,12 +35,6 @@ class ExplorarScreen extends StatelessWidget {
             'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
         'postImageUrl':
             'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=500',
-      },
-      {
-        'userName': 'Ana Júlia',
-        'postDate': 'Há 3 horas',
-        'description':
-            'Acabei de lançar o design do meu novo projeto no Figma! O que acham destas cores?',
       },
     ];
 
@@ -56,7 +49,7 @@ class ExplorarScreen extends StatelessWidget {
           description: post['description']!,
           userImageUrl: post['userImageUrl'],
           postImageUrl: post['postImageUrl'],
-          showFollowButton: true,
+          showFollowButton: true, // 👈 Botão de seguir ativado na aba Explorar!
         );
       },
     );

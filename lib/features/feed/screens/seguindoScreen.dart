@@ -6,7 +6,6 @@ class SeguindoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Criamos uma lista fictícia de publicações (Mocks) para apresentar na interface
     final List<Map<String, String?>> mockPosts = [
       {
         'userName': 'Ana Júlia',
@@ -18,7 +17,6 @@ class SeguindoScreen extends StatelessWidget {
         'postImageUrl':
             'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=500',
       },
-
       {
         'userName': 'Carlos Eduardo',
         'postDate': 'Há 1 hora',
@@ -26,7 +24,7 @@ class SeguindoScreen extends StatelessWidget {
             'Alguém mais está a ter problemas em configurar as rotas do Laravel com o Supabase? Aceito sugestões!',
         'userImageUrl':
             'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
-        'postImageUrl': null, // Post sem imagem anexada
+        'postImageUrl': null,
       },
       {
         'userName': 'Maria Silva',
@@ -37,12 +35,6 @@ class SeguindoScreen extends StatelessWidget {
             'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
         'postImageUrl':
             'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500',
-      },
-      {
-        'userName': 'Ana Júlia',
-        'postDate': 'Há 3 horas',
-        'description':
-            'Acabei de lançar o design do meu novo projeto no Figma! O que acham destas cores?',
       },
     ];
 
@@ -57,7 +49,8 @@ class SeguindoScreen extends StatelessWidget {
           description: post['description']!,
           userImageUrl: post['userImageUrl'],
           postImageUrl: post['postImageUrl'],
-          showFollowButton: false,
+          showFollowButton:
+              false, // 👈 Botão de seguir desativado na aba Seguindo!
         );
       },
     );
