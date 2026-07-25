@@ -8,7 +8,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  String email = '';
+  String name = '';
   String password = '';
 
   @override
@@ -45,13 +45,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 32.0),
 
-                // Campo de E-mail
+                // Campo de Nome
                 TextField(
-                  onChanged: (text) => email = text,
-                  keyboardType: TextInputType.emailAddress,
+                  onChanged: (text) => name = text,
                   decoration: const InputDecoration(
-                    labelText: 'E-mail',
-                    prefixIcon: Icon(Icons.email_outlined),
+                    labelText: 'Nome',
+                    prefixIcon: Icon(Icons.person_outline),
                   ),
                 ),
                 const SizedBox(height: 16.0),
@@ -74,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          if (email == 'a@a.com' && password == 'a') {
+                          if (name == 'a' && password == 'a') {
                             Navigator.pushReplacementNamed(
                               context,
                               '/homeScreen',
@@ -82,7 +81,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('E-mail ou senha incorretos'),
+                                content: Text(
+                                  'Nome ou senha incorretos',
+                                ), // 👈 Mensagem atualizada
                                 backgroundColor: Colors.redAccent,
                               ),
                             );

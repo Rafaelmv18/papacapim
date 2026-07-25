@@ -55,13 +55,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 16.0),
 
-                // Campo Email
                 TextField(
-                  onChanged: (text) => setState(() => email = text),
-                  keyboardType: TextInputType.emailAddress,
+                  onChanged: (text) => setState(() => password = text),
+                  obscureText: true,
                   decoration: const InputDecoration(
-                    labelText: 'E-mail',
-                    prefixIcon: Icon(Icons.email_outlined),
+                    labelText: 'Senha',
+                    prefixIcon: Icon(Icons.lock_outline),
                   ),
                 ),
                 const SizedBox(height: 16.0),
@@ -71,7 +70,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onChanged: (text) => setState(() => password = text),
                   obscureText: true,
                   decoration: const InputDecoration(
-                    labelText: 'Senha',
+                    labelText: 'Confirmar Senha',
                     prefixIcon: Icon(Icons.lock_outline),
                   ),
                 ),
