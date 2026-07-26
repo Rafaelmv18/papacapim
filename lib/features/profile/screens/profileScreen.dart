@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:papacapim/core/theme/appColors.dart';
 import '../../../core/widgets/avatarWidget.dart';
+import 'profileEdit.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -161,7 +162,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ProfileEditScreen(),
+                            ),
+                          );
+                        },
                         icon: const Icon(Icons.edit, size: 16, color: AppColors.text),
                         label: const Text('Editar Perfil', style: TextStyle(color: AppColors.text, fontWeight: FontWeight.bold)),
                         style: OutlinedButton.styleFrom(

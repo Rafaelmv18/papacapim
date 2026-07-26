@@ -4,6 +4,7 @@ import 'package:papacapim/features/auth/screens/loginScreen.dart';
 import 'package:papacapim/features/auth/screens/registerScreen.dart';
 import 'package:papacapim/features/feed/screens/feedScreen.dart';
 import 'package:papacapim/features/home/screens/homeScreen.dart';
+import 'package:papacapim/features/profile/screens/profileEdit.dart';
 
 class PapacapimApp extends StatelessWidget {
   const PapacapimApp({super.key});
@@ -21,6 +22,7 @@ class PapacapimApp extends StatelessWidget {
         '/register': (context) => const RegisterScreen(),
         '/feed': (context) => const FeedScreen(),
         '/homeScreen': (context) => const HomeScreen(),
+        '/profileEdit': (context) => const ProfileEditScreen(),
       },
     );
   }
