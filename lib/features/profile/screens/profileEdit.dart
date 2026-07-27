@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:papacapim/core/theme/appColors.dart';
 import '../../../core/widgets/avatarWidget.dart';
 
@@ -14,12 +16,101 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
+  // 📷 Guarda a imagem capturada ou selecionada
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
+
   @override
   void dispose() {
     _nameController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  // 📸 Função para capturar imagem da Câmera ou Galeria
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: source,
+      preferredCameraDevice: CameraDevice.front, // Abre por padrão na câmera frontal
+      maxWidth: 600,
+      maxHeight: 600,
+      imageQuality: 85,
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  // 📋 Modal Bottom Sheet com as opções de Alterar Foto (Câmera / Galeria)
+  void _showPhotoOptions() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.muted,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ListTile(
+                  leading: const Icon(Icons.camera_alt, color: AppColors.primary),
+                  title: const Text(
+                    'Tirar foto com a Câmera',
+                    style: TextStyle(color: AppColors.text, fontWeight: FontWeight.bold),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.camera); // 👈 Abre a Câmera
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.photo_library, color: AppColors.primary),
+                  title: const Text(
+                    'Escolher da Galeria',
+                    style: TextStyle(color: AppColors.text, fontWeight: FontWeight.bold),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.gallery); // 👈 Abre a Galeria
+                  },
+                ),
+                if (_selectedImage != null)
+                  ListTile(
+                    leading: const Icon(Icons.delete, color: Colors.redAccent),
+                    title: const Text(
+                      'Remover foto',
+                      style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      setState(() {
+                        _selectedImage = null; // Reseta para o Avatar com iniciais
+                      });
+                    },
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildTextField({
@@ -86,15 +177,50 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
         child: Column(
           children: [
             
-            // Foto de Perfil
-            const AvatarWidget(
-              initials: 'MO',
-              color: Color(0xFF2E7D32),
-              size: 100,
+            // 🖼️ Foto de Perfil (Mostra a foto da câmera se houver, senão mostra o AvatarWidget)
+            GestureDetector(
+              onTap: _showPhotoOptions,
+              child: Stack(
+                children: [
+                  _selectedImage != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: Image.file(
+                            _selectedImage!,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : const AvatarWidget(
+                          initials: 'MO',
+                          color: Color(0xFF2E7D32),
+                          size: 100,
+                        ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.camera_alt,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 16),
+
+            // Botão "Alterar foto"
             OutlinedButton.icon(
-              onPressed: () {},
+              onPressed: _showPhotoOptions, // 👈 Chama o BottomSheet
               icon: const Icon(Icons.camera_alt, size: 16, color: AppColors.primary),
               label: const Text('Alterar foto', style: TextStyle(color: AppColors.primary)),
               style: OutlinedButton.styleFrom(
@@ -132,14 +258,21 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Perfil atualizado com sucesso!'),
+                      backgroundColor: AppColors.primary,
+                    ),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 child: const Text(
-                  'Salvar alteracoes',
+                  'Salvar alterações',
                   style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
