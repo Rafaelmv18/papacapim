@@ -49,7 +49,7 @@ class UserTile extends StatelessWidget {
             ),
           ),
           child: const Text(
-            'Ver',
+            '+ Seguir',
             style: TextStyle(color: AppColors.primary, fontSize: 12),
           ),
         ),
