@@ -49,9 +49,7 @@ class SeguindoScreen extends StatelessWidget {
             // Ação de ir para o perfil ao clicar no post
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const ProfileUser(),
-              ),
+              MaterialPageRoute(builder: (context) => const ProfileUser()),
             );
           },
           child: PostCard(
@@ -60,7 +58,7 @@ class SeguindoScreen extends StatelessWidget {
             description: post['description']!,
             userImageUrl: post['userImageUrl'],
             postImageUrl: post['postImageUrl'],
-            showFollowButton: true,
+            showFollowButton: false,
           ),
         );
       },
