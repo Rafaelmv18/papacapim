@@ -4,7 +4,7 @@ import 'package:papacapim/core/widgets/avatarWidget.dart';
 
 class PostCard extends StatefulWidget {
   final String userName;
-  final String userHandle; // Ex: @mariana
+  final String userHandle;
   final String postDate;
   final String description;
   final String? userImageUrl;
@@ -39,15 +39,175 @@ class PostCard extends StatefulWidget {
 }
 
 class _PostCardState extends State<PostCard> {
-  late bool isLiked;
-  late int currentLikes;
+  bool isLiked = false;
+  int currentLikes = 0;
+  int currentComments = 0;
   bool isFollowing = false;
+
+  // Lista local para armazenar os comentários simulados desta postagem
+  final List<String> _commentsList = [
+    'Comentário muito legal!',
+    'Concordo totalmente com você.',
+  ];
 
   @override
   void initState() {
     super.initState();
-    isLiked = false;
     currentLikes = widget.likesCount;
+    currentComments = widget.commentsCount + _commentsList.length;
+  }
+
+  // 💬 Função que abre a UI de Comentários
+  void _openCommentsBottomSheet(BuildContext context) {
+    final TextEditingController commentController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 16,
+            right: 16,
+            top: 16,
+          ),
+
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setModalState) {
+              return Container(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.6,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Indicador de arraste
+                    Center(
+                      child: Container(
+                        width: 36,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppColors.muted,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Comentários',
+                      style: TextStyle(
+                        color: AppColors.text,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Lista de Comentários existentes
+                    Expanded(
+                      child: _commentsList.isEmpty
+                          ? const Center(
+                              child: Text(
+                                'Nenhum comentário ainda. Seja o primeiro!',
+                                style: TextStyle(color: AppColors.muted),
+                              ),
+                            )
+                          : ListView.separated(
+                              shrinkWrap: true,
+                              itemCount: _commentsList.length,
+                              separatorBuilder: (context, index) =>
+                                  const Divider(color: Colors.white12),
+                              itemBuilder: (context, index) {
+                                return ListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  leading: const AvatarWidget(
+                                    initials: 'EU',
+                                    color: AppColors.primary,
+                                    size: 32,
+                                  ),
+                                  title: const Text(
+                                    'Você',
+                                    style: TextStyle(
+                                      color: AppColors.text,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    _commentsList[index],
+                                    style: const TextStyle(
+                                      color: AppColors.text,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Campo para digitar novo comentário
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: commentController,
+                            style: const TextStyle(color: AppColors.text),
+                            decoration: InputDecoration(
+                              hintText: 'Escreva um comentário...',
+                              hintStyle: const TextStyle(
+                                color: AppColors.muted,
+                              ),
+                              filled: true,
+                              fillColor: AppColors.card,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          onPressed: () {
+                            if (commentController.text.trim().isNotEmpty) {
+                              setModalState(() {
+                                _commentsList.add(
+                                  commentController.text.trim(),
+                                );
+                              });
+                              setState(() {
+                                currentComments++;
+                              });
+                              commentController.clear();
+                            }
+                          },
+                          icon: const Icon(
+                            Icons.send,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -63,10 +223,9 @@ class _PostCardState extends State<PostCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ─── CABEÇALHO: Avatar, Nome, Username, Data e Botões ───
+          // ─── CABEÇALHO ───
           Row(
             children: [
-              // Avatar
               widget.userImageUrl != null
                   ? CircleAvatar(
                       radius: 20,
@@ -78,8 +237,6 @@ class _PostCardState extends State<PostCard> {
                       size: 40,
                     ),
               const SizedBox(width: 12),
-
-              // Nome e Username
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,14 +260,10 @@ class _PostCardState extends State<PostCard> {
                   ],
                 ),
               ),
-
-              // Data da postagem
               Text(
                 widget.postDate,
                 style: const TextStyle(color: AppColors.muted, fontSize: 12),
               ),
-
-              // Botão "Seguir" (se configurado)
               if (widget.showFollowButton) ...[
                 const SizedBox(width: 8),
                 GestureDetector(
@@ -133,7 +286,7 @@ class _PostCardState extends State<PostCard> {
           ),
           const SizedBox(height: 10),
 
-          // ─── CONTEÚDO: Texto e Imagem ───
+          // ─── CONTEÚDO ───
           Text(
             widget.description,
             style: const TextStyle(
@@ -191,23 +344,26 @@ class _PostCardState extends State<PostCard> {
               ),
               const SizedBox(width: 24),
 
-              // Comentários / Respostas
-              Row(
-                children: [
-                  const Icon(
-                    Icons.chat_bubble_outline,
-                    color: AppColors.muted,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    '${widget.commentsCount}',
-                    style: const TextStyle(
+              // Comentários / Respostas (🚀 Agora funcional abre o modal)
+              GestureDetector(
+                onTap: () => _openCommentsBottomSheet(context),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.chat_bubble_outline,
                       color: AppColors.muted,
-                      fontSize: 13,
+                      size: 20,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 6),
+                    Text(
+                      '$currentComments',
+                      style: const TextStyle(
+                        color: AppColors.muted,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(width: 24),
 
@@ -233,7 +389,7 @@ class _PostCardState extends State<PostCard> {
 
               const Spacer(),
 
-              // Deletar (Se for o próprio post)
+              // Deletar
               if (widget.isOwnPost && widget.onDelete != null)
                 GestureDetector(
                   onTap: widget.onDelete,
