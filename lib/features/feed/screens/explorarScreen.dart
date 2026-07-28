@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:papacapim/features/feed/widgets/postCard.dart';
+import 'package:papacapim/core/widgets/postCard.dart';
 
 class ExplorarScreen extends StatelessWidget {
   const ExplorarScreen({super.key});
@@ -40,7 +40,7 @@ class ExplorarScreen extends StatelessWidget {
 
     return ListView.builder(
       itemCount: mockPosts.length,
-      padding: const EdgeInsets.only(top: 8, bottom: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       itemBuilder: (context, index) {
         final post = mockPosts[index];
         return PostCard(
