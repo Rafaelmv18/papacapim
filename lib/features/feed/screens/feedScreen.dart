@@ -24,33 +24,35 @@ class _FeedScreenState extends State<FeedScreen> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          // Fundo Café Escuro da TopBar (como no protótipo)
-          backgroundColor: const Color(0xFF4E342E),
+          backgroundColor: const Color(0xFF4E342E), // Fundo tom café
           elevation: 0,
-          centerTitle:
-              false, // Alinha à esquerda caso queira colocar a imagem do lado
-          // 🎨 TÍTULO PAPACAPIM ESTILIZADO
+          centerTitle: false, // Mantém o título alinhado à esquerda
+          // 🎨 1. TÍTULO E LOGO (Lado Esquerdo)
           title: Row(
             children: [
-              // Ícone ou mini-logo opcional
-              Container(
-                width: 28,
+              Image.asset(
+                'assets/logo.png',
                 height: 28,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF4CAF50),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  Icons.flutter_dash,
-                  size: 18,
-                  color: Colors.white,
+                width: 28,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF4CAF50),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.flutter_dash,
+                    size: 18,
+                    color: Colors.white,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
               const Text(
                 'Papacapim',
                 style: TextStyle(
-                  color: Color(0xFFEFEBE9), // Cor clara de texto do tema
+                  color: Color(0xFFEFEBE9),
                   fontWeight: FontWeight.w800,
                   fontSize: 20,
                   letterSpacing: -0.5,
@@ -59,67 +61,56 @@ class _FeedScreenState extends State<FeedScreen> {
             ],
           ),
 
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(130),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 8.0,
-                  ),
-                  // 🎨 SEARCH BAR COM O DESIGN DO PROTÓTIPO
-                  child: SearchBar(
-                    controller: _searchController,
-                    elevation: const WidgetStatePropertyAll(
-                      0,
-                    ), // Sem sombra forte solta
-                    backgroundColor: const WidgetStatePropertyAll(
-                      Color(0x40000000), // Fundo escuro transparente (inputBg)
+          // 🔔 2. BOTÃO DE NOTIFICAÇÃO (Lado Direito do Header)
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: IconButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Você não possui novas notificações!'),
+                      duration: Duration(seconds: 1),
                     ),
-                    side: const WidgetStatePropertyAll(
-                      BorderSide(
-                        color: Color(0x2EBCAAA4),
-                        width: 1,
-                      ), // Borda fina sutil
+                  );
+                },
+                icon: Stack(
+                  children: [
+                    const Icon(
+                      Icons.notifications_none_outlined,
+                      color: Color(0xFFBCAAA4), // Cor fosca do tema café
+                      size: 26,
                     ),
-                    textStyle: const WidgetStatePropertyAll(
-                      TextStyle(
-                        color: Color(0xFFEFEBE9),
-                        fontSize: 14,
-                      ), // Texto digitado em tom claro
-                    ),
-                    hintText: 'Pesquisar...',
-                    hintStyle: const WidgetStatePropertyAll(
-                      TextStyle(
-                        color: Color(0xFFBCAAA4),
-                        fontSize: 14,
-                      ), // Texto "Pesquisar..." em cinza/café
-                    ),
-                    leading: const Padding(
-                      padding: EdgeInsets.only(left: 8.0),
-                      child: Icon(
-                        Icons.search,
-                        color: Color(0xFFBCAAA4),
-                        size: 20,
+                    // Bolinha indicadora de notificação
+                    Positioned(
+                      top: 2,
+                      right: 2,
+                      child: Container(
+                        width: 9,
+                        height: 9,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF4CAF50), // Verde em destaque
+                          shape: BoxShape.circle,
+                        ),
                       ),
                     ),
-                    padding: const WidgetStatePropertyAll<EdgeInsets>(
-                      EdgeInsets.symmetric(horizontal: 12.0),
-                    ),
-                    onTap: () {
-                      print('SearchBar clicada');
-                    },
-                  ),
+                  ],
                 ),
+              ),
+            ),
+          ],
 
-                // 🎨 TABBAR COM CORES HARMONIZADAS
+          // 🎨 3. SUAS ABAS (Bottom do AppBar)
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(
+              48,
+            ), // Ajustado para a altura da TabBar
+            child: Column(
+              children: [
                 TabBar(
-                  labelColor: const Color(0xFF4CAF50), // Verde ativo
-                  unselectedLabelColor: const Color(
-                    0xFFBCAAA4,
-                  ), // Cinza inativo
-                  indicatorColor: const Color(0xFF4CAF50), // Linha verde
+                  labelColor: const Color(0xFF4CAF50),
+                  unselectedLabelColor: const Color(0xFFBCAAA4),
+                  indicatorColor: const Color(0xFF4CAF50),
                   indicatorWeight: 3.0,
                   labelStyle: const TextStyle(
                     fontWeight: FontWeight.bold,
