@@ -34,7 +34,6 @@ class SearchUsersList extends StatelessWidget {
       itemBuilder: (context, index) {
         final user = listItems[index];
         
-        // 1. Guarda o visual do usuário na variável (com ou sem a caixa em volta)
         Widget userWidget = isPreview
             ? UserTile(user: user)
             : Container(
@@ -47,9 +46,8 @@ class SearchUsersList extends StatelessWidget {
                 child: UserTile(user: user),
               );
 
-        // 2. Abraça o visual com o GestureDetector invisível
         return GestureDetector(
-          behavior: HitTestBehavior.opaque, // Mantém o clique no item todo, sem efeito de cor
+          behavior: HitTestBehavior.opaque,
           onTap: () {
             // Esconde o teclado caso esteja aberto
             FocusScope.of(context).unfocus();

@@ -29,9 +29,9 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 // Icone / Logo
                 Image.network(
-                  'https://cdn-icons-png.flaticon.com/512/616/616408.png',
-                  width: 90,
-                  height: 90,
+                  'https://img.icons8.com/3d-fluency/512/duck.png',
+                  width: 130,
+                  height: 130,
                 ),
                 const SizedBox(height: 16.0),
 

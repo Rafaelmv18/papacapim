@@ -32,8 +32,8 @@ class _FeedScreenState extends State<FeedScreen> {
           // 🎨 1. TÍTULO E LOGO (Lado Esquerdo)
           title: Row(
             children: [
-              Image.asset(
-                'assets/logo.png',
+              Image.network(
+                'https://img.icons8.com/3d-fluency/512/duck.png',
                 height: 28,
                 width: 28,
                 errorBuilder: (context, error, stackTrace) => Container(
