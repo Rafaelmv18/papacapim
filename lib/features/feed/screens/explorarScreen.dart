@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:papacapim/core/widgets/postCard.dart';
+import 'package:papacapim/features/profile/screens/profileUser.dart';
 
 class ExplorarScreen extends StatelessWidget {
   const ExplorarScreen({super.key});
@@ -43,13 +44,24 @@ class ExplorarScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       itemBuilder: (context, index) {
         final post = mockPosts[index];
-        return PostCard(
-          userName: post['userName']!,
-          postDate: post['postDate']!,
-          description: post['description']!,
-          userImageUrl: post['userImageUrl'],
-          postImageUrl: post['postImageUrl'],
-          showFollowButton: true, // 👈 Botão de seguir ativado na aba Explorar!
+        return GestureDetector(
+          onTap: () {
+            // Ação de ir para o perfil ao clicar no post
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProfileUser(),
+              ),
+            );
+          },
+          child: PostCard(
+            userName: post['userName']!,
+            postDate: post['postDate']!,
+            description: post['description']!,
+            userImageUrl: post['userImageUrl'],
+            postImageUrl: post['postImageUrl'],
+            showFollowButton: true,
+          ),
         );
       },
     );

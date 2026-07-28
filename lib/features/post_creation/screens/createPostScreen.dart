@@ -116,6 +116,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false, // Remove o botão de voltar padrão
         title: const Text(
           'Nova Postagem',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

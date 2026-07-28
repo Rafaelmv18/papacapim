@@ -2,23 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:papacapim/core/theme/appColors.dart';
 import 'package:papacapim/core/widgets/postCard.dart';
 import '../../../core/widgets/avatarWidget.dart';
-import 'profileEdit.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class ProfileUser extends StatefulWidget {
+  const ProfileUser({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ProfileUser> createState() => _ProfileUserState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileUserState extends State<ProfileUser> {
+  // Controle do botão de seguir
+  bool isFollowing = false;
+
   final List<Map<String, dynamic>> mockPosts = [
     {
       'id': '1',
-      'initials': 'MO',
-      'color': Colors.green,
-      'name': 'Mariana Oliveira',
-      'username': '@mariana',
+      'initials': 'LF',
+      'color': Colors.blue,
+      'name': 'Lucas Ferreira',
+      'username': '@lucas_f',
       'time': '2h',
       'content':
           'Acabei de chegar em Florianópolis! As praias aqui são simplesmente incríveis. Alguém tem dica de restaurante?',
@@ -28,37 +30,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     },
     {
       'id': '2',
-      'initials': 'MO',
-      'color': Colors.green,
-      'name': 'Mariana Oliveira',
-      'username': '@mariana',
+      'initials': 'LF',
+      'color': Colors.blue,
+      'name': 'Lucas Ferreira',
+      'username': '@lucas_f',
       'time': '4h',
       'content':
-          'Finalmente terminei o redesign do nosso produto! Foram semanas de trabalho mas o resultado ficou incrível. Obrigada ao time todo!',
+          'Dia produtivo de muito código e café! A arquitetura do app está ficando excelente.',
       'likes': 231,
       'comments': 47,
       'isLiked': true,
     },
-    {
-      'id': '3',
-      'initials': 'MO',
-      'color': Colors.green,
-      'name': 'Mariana Oliveira',
-      'username': '@mariana',
-      'time': '6h',
-      'content':
-          'Dica do dia: quando você não consegue resolver um bug, vá tomar um café e volte depois.',
-      'likes': 15,
-      'comments': 3,
-      'isLiked': false,
-    },
   ];
-
-  void _deletePost(String id) {
-    setState(() {
-      mockPosts.removeWhere((post) => post['id'] == id);
-    });
-  }
 
   Widget _buildStatColumn(String number, String label) {
     return Column(
@@ -84,9 +67,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        // Removido o automaticallyImplyLeading para a seta de voltar aparecer
         title: const Text(
-          '@mariana',
+          '@lucas_f', // Mock de username genérico
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -96,7 +79,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
-        // Linha divisória logo abaixo do @mariana
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
           child: Container(color: Colors.white12, height: 1.0),
@@ -110,12 +92,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
-                padding: const EdgeInsets.all(16.0), // Espaçamento interno
+                padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
-                  color: AppColors.card, // << AQUI APLICA A MESMA COR DOS POSTS
-                  borderRadius: BorderRadius.circular(
-                    16,
-                  ), // Bordas arredondadas
+                  color: AppColors.card,
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,8 +104,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const AvatarWidget(
-                          initials: 'MO',
-                          color: Color(0xFF2E7D32),
+                          initials: 'LF',
+                          color: Colors.blue,
                           size: 80,
                         ),
                         const SizedBox(width: 16),
@@ -134,7 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Mariana Oliveira',
+                                'Lucas Ferreira',
                                 style: TextStyle(
                                   color: AppColors.text,
                                   fontSize: 20,
@@ -142,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                               ),
                               const Text(
-                                '@mariana',
+                                '@lucas_f',
                                 style: TextStyle(
                                   color: AppColors.muted,
                                   fontSize: 14,
@@ -151,9 +131,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               const SizedBox(height: 12),
                               Row(
                                 children: [
-                                  _buildStatColumn('1.247', 'seguidores'),
+                                  _buildStatColumn('3.5k', 'seguidores'),
                                   const SizedBox(width: 24),
-                                  _buildStatColumn('384', 'seguindo'),
+                                  _buildStatColumn('152', 'seguindo'),
                                 ],
                               ),
                             ],
@@ -164,7 +144,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 16),
 
                     const Text(
-                      'Desenvolvedora apaixonada por café e código.\nExplorando o mundo um commit de cada vez.',
+                      'Desenvolvedor mobile focado em Flutter. Compartilhando a jornada técnica e algumas viagens.',
                       style: TextStyle(
                         color: AppColors.text,
                         fontSize: 14,
@@ -173,39 +153,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 20),
 
+                    // --- BOTÃO SEGUIR / SEGUINDO ---
                     SizedBox(
                       width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ProfileEditScreen(),
+                      child: isFollowing
+                          ? OutlinedButton(
+                              onPressed: () {
+                                setState(() => isFollowing = false);
+                              },
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                side: BorderSide(
+                                  color: AppColors.muted.withOpacity(0.5),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: const Text(
+                                'Seguindo',
+                                style: TextStyle(
+                                  color: AppColors.text,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            )
+                          : ElevatedButton(
+                              onPressed: () {
+                                setState(() => isFollowing = true);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: const Text(
+                                'Seguir',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.edit,
-                          size: 16,
-                          color: AppColors.text,
-                        ),
-                        label: const Text(
-                          'Editar Perfil',
-                          style: TextStyle(
-                            color: AppColors.text,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          side: BorderSide(
-                            color: AppColors.muted.withOpacity(0.5),
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -244,12 +235,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   userHandle: post['username'] ?? '',
                   postDate: post['time'],
                   description: post['content'],
-                  initials: post['initials'] ?? 'P',
+                  initials: post['initials'] ?? 'U',
                   avatarColor: post['color'] ?? AppColors.primary,
                   likesCount: post['likes'] ?? 0,
                   commentsCount: post['comments'] ?? 0,
-                  isOwnPost: true, // Habilita a lixeira
-                  onDelete: () => _deletePost(post['id']),
+                  isOwnPost: false, // Não habilita a lixeira
+                  showFollowButton: false,
                 );
               },
             ),

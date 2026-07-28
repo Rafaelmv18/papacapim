@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:papacapim/core/theme/appColors.dart';
 import 'userTile.dart';
+import 'package:papacapim/features/profile/screens/profileUser.dart';
 
 class SearchUsersList extends StatelessWidget {
   final List<Map<String, dynamic>> users;
@@ -32,7 +33,9 @@ class SearchUsersList extends StatelessWidget {
           : const SizedBox(height: 10),
       itemBuilder: (context, index) {
         final user = listItems[index];
-        return isPreview
+        
+        // 1. Guarda o visual do usuário na variável (com ou sem a caixa em volta)
+        Widget userWidget = isPreview
             ? UserTile(user: user)
             : Container(
                 padding: const EdgeInsets.all(12),
@@ -43,6 +46,24 @@ class SearchUsersList extends StatelessWidget {
                 ),
                 child: UserTile(user: user),
               );
+
+        // 2. Abraça o visual com o GestureDetector invisível
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque, // Mantém o clique no item todo, sem efeito de cor
+          onTap: () {
+            // Esconde o teclado caso esteja aberto
+            FocusScope.of(context).unfocus();
+            
+            // Navega para o perfil
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProfileUser(),
+              ),
+            );
+          },
+          child: userWidget,
+        );
       },
     );
 

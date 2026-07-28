@@ -24,9 +24,11 @@ class _FeedScreenState extends State<FeedScreen> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false, // Remove o botão de voltar padrão
           backgroundColor: const Color(0xFF4E342E), // Fundo tom café
           elevation: 0,
           centerTitle: false, // Mantém o título alinhado à esquerda
+          
           // 🎨 1. TÍTULO E LOGO (Lado Esquerdo)
           title: Row(
             children: [

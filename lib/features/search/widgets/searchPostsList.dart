@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:papacapim/core/theme/appColors.dart';
 import 'package:papacapim/core/widgets/postCard.dart';
+// 1. IMPORT DA TELA DE PERFIL ADICIONADO AQUI
+import 'package:papacapim/features/profile/screens/profileUser.dart';
 
 class SearchPostsList extends StatelessWidget {
   final List<Map<String, dynamic>> posts;
@@ -29,18 +31,34 @@ class SearchPostsList extends StatelessWidget {
           ? EdgeInsets.zero
           : const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       itemCount: listItems.length,
-      itemBuilder: (context, index) {
+itemBuilder: (context, index) {
         final post = listItems[index];
-        return PostCard(
-          userName: post['name'],
-          userHandle: post['username'] ?? '',
-          postDate: post['time'],
-          description: post['content'],
-          initials: post['initials'] ?? 'P',
-          avatarColor: post['color'] ?? AppColors.primary,
-          likesCount: post['likes'] ?? 0,
-          commentsCount: post['comments'] ?? 0,
-          showFollowButton: true,
+        
+        // TROQUE O INKWELL POR ISTO AQUI:
+        return GestureDetector(
+          // Esta linha faz a mágica de manter o clique no post todo sem mudar a cor
+          behavior: HitTestBehavior.opaque, 
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ProfileUser(),
+              ),
+            );
+          },
+          child: PostCard(
+            userName: post['name'],
+            userHandle: post['username'] ?? '',
+            postDate: post['time'],
+            description: post['content'],
+            initials: post['initials'] ?? 'P',
+            avatarColor: post['color'] ?? AppColors.primary,
+            likesCount: post['likes'] ?? 0,
+            commentsCount: post['comments'] ?? 0,
+            showFollowButton: true,
+          ),
         );
       },
     );
