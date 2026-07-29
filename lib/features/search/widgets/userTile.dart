@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:papacapim/core/theme/appColors.dart';
 import 'package:papacapim/core/widgets/avatarWidget.dart';
 
+// Widget com estado (StatefulWidget) para renderizar a linha individual de informações de um usuário na busca
 class UserTile extends StatefulWidget {
+  // Mapa dinâmico contendo os dados do usuário (nome, username, cor, iniciais, estado de seguir)
   final Map<String, dynamic> user;
 
   const UserTile({super.key, required this.user});
@@ -11,7 +13,9 @@ class UserTile extends StatefulWidget {
   State<UserTile> createState() => _UserTileState();
 }
 
+// Classe de estado do UserTile
 class _UserTileState extends State<UserTile> {
+  // Variável de estado para controlar se o usuário está sendo seguido ou não
   bool isFollowing = false;
 
   @override
@@ -21,12 +25,15 @@ class _UserTileState extends State<UserTile> {
     isFollowing = widget.user['isFollowing'] ?? false;
   }
 
+  // Alterna o estado de seguir/deixar de seguir e exibe notificação visual na tela (SnackBar)
   void _toggleFollow() {
     setState(() {
       isFollowing = !isFollowing;
-      widget.user['isFollowing'] = isFollowing; // Mantém o mapa sincronizado
+      widget.user['isFollowing'] =
+          isFollowing; // Mantém o mapa sincronizado com o novo estado
     });
 
+    // Limpa SnackBars anteriores antes de exibir a nova notificação
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -44,7 +51,7 @@ class _UserTileState extends State<UserTile> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Avatar do Usuário
+        // Avatar do Usuário renderizado via AvatarWidget reutilizável
         AvatarWidget(
           initials: widget.user['initials'] ?? 'U',
           color: widget.user['color'] ?? AppColors.primary,
@@ -52,7 +59,7 @@ class _UserTileState extends State<UserTile> {
         ),
         const SizedBox(width: 12),
 
-        // Nome e Username
+        // Nome completo e Username alinhados verticalmente
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +72,8 @@ class _UserTileState extends State<UserTile> {
                   fontSize: 14,
                 ),
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                overflow:
+                    TextOverflow.ellipsis, // Corta textos longos com "..."
               ),
               Text(
                 widget.user['username'] ?? '',
@@ -75,7 +83,7 @@ class _UserTileState extends State<UserTile> {
           ),
         ),
 
-        // 🔘 BOTÃO SEGUIR / SEGUINDO (Dinâmico)
+        // 🔘 BOTÃO SEGUIR / SEGUINDO (Estilização e texto dinâmicos conforme o estado)
         OutlinedButton(
           onPressed: _toggleFollow,
           style: OutlinedButton.styleFrom(

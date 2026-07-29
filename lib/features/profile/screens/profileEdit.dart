@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:papacapim/core/theme/appColors.dart';
 import '../../../core/widgets/avatarWidget.dart';
 
+// Widget com estado (StatefulWidget) responsável pela edição dos dados do perfil do usuário
 class ProfileEditScreen extends StatefulWidget {
   const ProfileEditScreen({super.key});
 
@@ -11,33 +12,42 @@ class ProfileEditScreen extends StatefulWidget {
   State<ProfileEditScreen> createState() => _ProfileEditScreenState();
 }
 
+// Classe de estado da tela de Edição de Perfil
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
-  final TextEditingController _nameController = TextEditingController(text: 'Mariana Oliveira');
+  // Controllers para gerenciar os campos de texto do formulário
+  final TextEditingController _nameController = TextEditingController(
+    text: 'Mariana Oliveira',
+  );
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
-  // 📷 Guarda a imagem capturada ou selecionada
+  // Guarda a imagem capturada pela câmera ou selecionada da galeria
   File? _selectedImage;
+  // Instância do ImagePicker para acesso aos recursos nativos de mídia
   final ImagePicker _picker = ImagePicker();
 
   @override
   void dispose() {
+    // Libera a memória alocada pelos controllers ao descartar a tela
     _nameController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  // 📸 Função para capturar imagem da Câmera ou Galeria
+  // Função assíncrona para obter a imagem da Câmera ou Galeria
   Future<void> _pickImage(ImageSource source) async {
     final XFile? pickedFile = await _picker.pickImage(
       source: source,
-      preferredCameraDevice: CameraDevice.front, // Abre por padrão na câmera frontal
+      preferredCameraDevice:
+          CameraDevice.front, // Abre por padrão na câmera frontal
       maxWidth: 600,
       maxHeight: 600,
       imageQuality: 85,
     );
 
+    // Atualiza o estado da imagem caso um arquivo tenha sido selecionado
     if (pickedFile != null) {
       setState(() {
         _selectedImage = File(pickedFile.path);
@@ -45,7 +55,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     }
   }
 
-  // 📋 Modal Bottom Sheet com as opções de Alterar Foto (Câmera / Galeria)
+  // Modal Bottom Sheet com as opções de Alterar Foto (Câmera / Galeria / Remover)
   void _showPhotoOptions() {
     showModalBottomSheet(
       context: context,
@@ -60,6 +70,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Marcador de arraste visual no topo do modal
                 Container(
                   width: 36,
                   height: 4,
@@ -69,39 +80,58 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
+                // Opção para tirar foto usando a câmera
                 ListTile(
-                  leading: const Icon(Icons.camera_alt, color: AppColors.primary),
+                  leading: const Icon(
+                    Icons.camera_alt,
+                    color: AppColors.primary,
+                  ),
                   title: const Text(
                     'Tirar foto com a Câmera',
-                    style: TextStyle(color: AppColors.text, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: AppColors.text,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
-                    _pickImage(ImageSource.camera); // 👈 Abre a Câmera
+                    _pickImage(ImageSource.camera); // Abre a Câmera
                   },
                 ),
+                // Opção para selecionar imagem da galeria
                 ListTile(
-                  leading: const Icon(Icons.photo_library, color: AppColors.primary),
+                  leading: const Icon(
+                    Icons.photo_library,
+                    color: AppColors.primary,
+                  ),
                   title: const Text(
                     'Escolher da Galeria',
-                    style: TextStyle(color: AppColors.text, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: AppColors.text,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
-                    _pickImage(ImageSource.gallery); // 👈 Abre a Galeria
+                    _pickImage(ImageSource.gallery); // Abre a Galeria
                   },
                 ),
+                // Opção condicional para remover foto atual
                 if (_selectedImage != null)
                   ListTile(
                     leading: const Icon(Icons.delete, color: Colors.redAccent),
                     title: const Text(
                       'Remover foto',
-                      style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     onTap: () {
                       Navigator.pop(context);
                       setState(() {
-                        _selectedImage = null; // Reseta para o Avatar com iniciais
+                        _selectedImage =
+                            null; // Reseta para o Avatar com iniciais
                       });
                     },
                   ),
@@ -113,6 +143,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     );
   }
 
+  // Método auxiliar para construção padronizada dos campos do formulário
   Widget _buildTextField({
     required String label,
     required String hint,
@@ -122,6 +153,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Rótulo do campo em caixa alta
         Text(
           label,
           style: const TextStyle(
@@ -132,6 +164,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
           ),
         ),
         const SizedBox(height: 8),
+        // Campo de entrada estilizado
         TextField(
           controller: controller,
           obscureText: isPassword,
@@ -141,7 +174,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             hintStyle: const TextStyle(color: AppColors.muted),
             filled: true,
             fillColor: AppColors.card,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
@@ -159,25 +195,25 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       appBar: AppBar(
         title: const Text(
           'Editar Perfil',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.text),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: AppColors.text,
+          ),
         ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
-          child: Container(
-            color: Colors.white12,
-            height: 1.0,
-          ),
+          child: Container(color: Colors.white12, height: 1.0),
         ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-            
-            // 🖼️ Foto de Perfil (Mostra a foto da câmera se houver, senão mostra o AvatarWidget)
+            // Foto de Perfil (Mostra a foto da câmera/galeria se houver, senão exibe o AvatarWidget)
             GestureDetector(
               onTap: _showPhotoOptions,
               child: Stack(
@@ -197,6 +233,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                           color: Color(0xFF2E7D32),
                           size: 100,
                         ),
+                  // Ícone de câmera posicionado no canto inferior direito do avatar
                   Positioned(
                     bottom: 0,
                     right: 0,
@@ -220,20 +257,30 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
             // Botão "Alterar foto"
             OutlinedButton.icon(
-              onPressed: _showPhotoOptions, // 👈 Chama o BottomSheet
-              icon: const Icon(Icons.camera_alt, size: 16, color: AppColors.primary),
-              label: const Text('Alterar foto', style: TextStyle(color: AppColors.primary)),
+              onPressed: _showPhotoOptions, // Chama o BottomSheet
+              icon: const Icon(
+                Icons.camera_alt,
+                size: 16,
+                color: AppColors.primary,
+              ),
+              label: const Text(
+                'Alterar foto',
+                style: TextStyle(color: AppColors.primary),
+              ),
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: AppColors.primary),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
               ),
             ),
             const SizedBox(height: 40),
 
-            // Campos de Texto
+            // Campos de Texto do Formulário
             _buildTextField(
               label: 'NOME',
               hint: 'Mariana Oliveira',
@@ -251,10 +298,10 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               controller: _confirmPasswordController,
               isPassword: true,
             ),
-            
+
             const SizedBox(height: 8),
 
-            // Botões de Ação
+            // Botão Principal: Salvar alterações
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -269,16 +316,23 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: const Text(
                   'Salvar alterações',
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 16),
-            
+
+            // Botão Secundário: Excluir conta
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
@@ -286,11 +340,17 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   side: const BorderSide(color: Colors.redAccent),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: const Text(
                   'Excluir conta',
-                  style: TextStyle(color: Colors.redAccent, fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.redAccent,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

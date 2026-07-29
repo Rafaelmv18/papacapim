@@ -3,6 +3,7 @@ import 'package:papacapim/core/theme/appColors.dart';
 import 'package:papacapim/core/widgets/postCard.dart';
 import '../../../core/widgets/avatarWidget.dart';
 
+// Widget com estado (StatefulWidget) para exibição do perfil de outros usuários da plataforma
 class ProfileUser extends StatefulWidget {
   const ProfileUser({super.key});
 
@@ -10,10 +11,12 @@ class ProfileUser extends StatefulWidget {
   State<ProfileUser> createState() => _ProfileUserState();
 }
 
+// Classe de estado da tela de Perfil do Usuário
 class _ProfileUserState extends State<ProfileUser> {
-  // Controle do botão de seguir
+  // Controle do estado local do botão de seguir/deixar de seguir
   bool isFollowing = false;
 
+  // Lista mockada de postagens do usuário visualizado
   final List<Map<String, dynamic>> mockPosts = [
     {
       'id': '1',
@@ -43,6 +46,7 @@ class _ProfileUserState extends State<ProfileUser> {
     },
   ];
 
+  // Helper widget para estruturação das colunas de estatísticas (seguidores/seguindo)
   Widget _buildStatColumn(String number, String label) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,9 +71,9 @@ class _ProfileUserState extends State<ProfileUser> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // Removido o automaticallyImplyLeading para a seta de voltar aparecer
+        // Sem automaticamenteImplyLeading para preservar o botão de voltar padrão da navegação
         title: const Text(
-          '@lucas_f', // Mock de username genérico
+          '@lucas_f', // Mock de username genérico exibido no centro
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -88,7 +92,7 @@ class _ProfileUserState extends State<ProfileUser> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Usuário e Bio
+            // ─── CABEÇALHO DO PERFIL: Usuário e Bio ───
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
@@ -103,6 +107,7 @@ class _ProfileUserState extends State<ProfileUser> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        // Avatar visual do usuário com iniciais
                         const AvatarWidget(
                           initials: 'LF',
                           color: Colors.blue,
@@ -129,6 +134,7 @@ class _ProfileUserState extends State<ProfileUser> {
                                 ),
                               ),
                               const SizedBox(height: 12),
+                              // Métricas numéricas de seguidores e seguindo
                               Row(
                                 children: [
                                   _buildStatColumn('3.5k', 'seguidores'),
@@ -143,6 +149,7 @@ class _ProfileUserState extends State<ProfileUser> {
                     ),
                     const SizedBox(height: 16),
 
+                    // Texto descritivo da bio do usuário
                     const Text(
                       'Desenvolvedor mobile focado em Flutter. Compartilhando a jornada técnica e algumas viagens.',
                       style: TextStyle(
@@ -153,7 +160,7 @@ class _ProfileUserState extends State<ProfileUser> {
                     ),
                     const SizedBox(height: 20),
 
-                    // --- BOTÃO SEGUIR / SEGUINDO ---
+                    // ─── BOTÃO SEGUIR / SEGUINDO ───
                     SizedBox(
                       width: double.infinity,
                       child: isFollowing
@@ -162,7 +169,9 @@ class _ProfileUserState extends State<ProfileUser> {
                                 setState(() => isFollowing = false);
                               },
                               style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
                                 side: BorderSide(
                                   color: AppColors.muted.withOpacity(0.5),
                                 ),
@@ -184,7 +193,9 @@ class _ProfileUserState extends State<ProfileUser> {
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
-                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -203,7 +214,7 @@ class _ProfileUserState extends State<ProfileUser> {
               ),
             ),
 
-            // --- TÍTULO POSTAGENS ---
+            // ─── TÍTULO DA SEÇÃO DE POSTAGENS ───
             Container(
               width: double.infinity,
               decoration: const BoxDecoration(
@@ -221,10 +232,11 @@ class _ProfileUserState extends State<ProfileUser> {
               ),
             ),
 
-            // --- LISTA DE POSTAGENS ---
+            // ─── LISTA DE POSTAGENS ───
             ListView.builder(
               shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+              physics:
+                  const NeverScrollableScrollPhysics(), // Evita conflito de rolagens com a tela externa
               padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
               itemCount: mockPosts.length,
               itemBuilder: (context, index) {
@@ -239,8 +251,10 @@ class _ProfileUserState extends State<ProfileUser> {
                   avatarColor: post['color'] ?? AppColors.primary,
                   likesCount: post['likes'] ?? 0,
                   commentsCount: post['comments'] ?? 0,
-                  isOwnPost: false, // Não habilita a lixeira
-                  showFollowButton: false,
+                  isOwnPost:
+                      false, // Desabilita o ícone de remoção (lixeira) por não ser o próprio perfil
+                  showFollowButton:
+                      false, // Oculta botão individual de seguir nos cards do próprio perfil
                 );
               },
             ),

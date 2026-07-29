@@ -4,6 +4,7 @@ import 'package:papacapim/core/widgets/postCard.dart';
 import '../../../core/widgets/avatarWidget.dart';
 import 'profileEdit.dart';
 
+// Widget com estado (StatefulWidget) para gerenciar o perfil do usuário e suas postagens
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -11,7 +12,9 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
+// Classe de estado da tela de Perfil
 class _ProfileScreenState extends State<ProfileScreen> {
+  // Lista local simulada (mock) das postagens publicadas pelo próprio usuário
   final List<Map<String, dynamic>> mockPosts = [
     {
       'id': '1',
@@ -54,12 +57,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     },
   ];
 
+  // Função para deletar um post específico da lista pelo seu ID
   void _deletePost(String id) {
     setState(() {
       mockPosts.removeWhere((post) => post['id'] == id);
     });
   }
 
+  // Helper widget para construir as colunas de métricas de seguidores e seguindo
   Widget _buildStatColumn(String number, String label) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,7 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: false, // Oculta botão automático de voltar
         title: const Text(
           '@mariana',
           style: TextStyle(
@@ -96,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
-        // Linha divisória logo abaixo do @mariana
+        // Linha divisória discreta logo abaixo do AppBar
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
           child: Container(color: Colors.white12, height: 1.0),
@@ -106,16 +111,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Usuário e Bio
+            // ─── CABEÇALHO DO PERFIL: Avatar, Nome, Métricas e Bio ───
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
                 padding: const EdgeInsets.all(16.0), // Espaçamento interno
                 decoration: BoxDecoration(
-                  color: AppColors.card, // << AQUI APLICA A MESMA COR DOS POSTS
+                  color: AppColors
+                      .card, // << Aplica a mesma cor de fundo dos cards de post
                   borderRadius: BorderRadius.circular(
                     16,
-                  ), // Bordas arredondadas
+                  ), // Bordas arredondadas do container de perfil
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,6 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        // Avatar com as iniciais do usuário
                         const AvatarWidget(
                           initials: 'MO',
                           color: Color(0xFF2E7D32),
@@ -149,6 +156,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                               ),
                               const SizedBox(height: 12),
+                              // Exibição dos contadores de seguidores e seguindo
                               Row(
                                 children: [
                                   _buildStatColumn('1.247', 'seguidores'),
@@ -163,6 +171,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 16),
 
+                    // Bio / Descrição pessoal do perfil
                     const Text(
                       'Desenvolvedora apaixonada por café e código.\nExplorando o mundo um commit de cada vez.',
                       style: TextStyle(
@@ -173,6 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 20),
 
+                    // Botão para navegar até a tela de Edição de Perfil
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
@@ -212,7 +222,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
 
-            // --- TÍTULO POSTAGENS ---
+            // ─── TÍTULO DA SEÇÃO DE POSTAGENS ───
             Container(
               width: double.infinity,
               decoration: const BoxDecoration(
@@ -230,10 +240,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
 
-            // --- LISTA DE POSTAGENS ---
+            // ─── LISTA DE POSTAGENS DO PRÓPRIO USUÁRIO ───
             ListView.builder(
               shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+              physics:
+                  const NeverScrollableScrollPhysics(), // Evita conflito de rolagem com o SingleChildScrollView
               padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
               itemCount: mockPosts.length,
               itemBuilder: (context, index) {
@@ -248,7 +259,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   avatarColor: post['color'] ?? AppColors.primary,
                   likesCount: post['likes'] ?? 0,
                   commentsCount: post['comments'] ?? 0,
-                  isOwnPost: true, // Habilita a lixeira
+                  isOwnPost: true, // Habilita o ícone da lixeira para exclusão
                   onDelete: () => _deletePost(post['id']),
                 );
               },

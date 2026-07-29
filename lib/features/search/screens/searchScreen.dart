@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import '../widgets/searchUsersList.dart';
 import '../widgets/searchPostsList.dart';
 
+// Enumeração para gerenciar os modos de visualização da tela de busca
 enum SearchMode { home, allUsers, allPosts }
 
+// Widget com estado (StatefulWidget) para controlar a busca e os modos de navegação interna
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
@@ -11,10 +13,14 @@ class SearchScreen extends StatefulWidget {
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
+// Classe de estado da tela de busca
 class _SearchScreenState extends State<SearchScreen> {
+  // Controller do campo de entrada da barra de pesquisa
   final TextEditingController _searchController = TextEditingController();
+  // Estado atual do modo de visualização (inicia na tela principal de busca)
   SearchMode _currentMode = SearchMode.home;
 
+  // Lista simulada (mock) de usuários para os resultados de busca
   final List<Map<String, dynamic>> _mockUsers = [
     {
       'initials': 'LF',
@@ -42,6 +48,7 @@ class _SearchScreenState extends State<SearchScreen> {
     },
   ];
 
+  // Lista simulada (mock) de postagens para os resultados de busca
   final List<Map<String, dynamic>> _mockPosts = [
     {
       'initials': 'LF',
@@ -55,30 +62,36 @@ class _SearchScreenState extends State<SearchScreen> {
     },
   ];
 
+  // Listas filtradas dinamicamente com base no texto digitado na pesquisa
   late List<Map<String, dynamic>> _filteredUsers;
   late List<Map<String, dynamic>> _filteredPosts;
 
   @override
   void initState() {
     super.initState();
+    // Inicializa as listas filtradas com a totalidade dos dados mockados
     _filteredUsers = _mockUsers;
     _filteredPosts = _mockPosts;
   }
 
   @override
   void dispose() {
+    // Libera os recursos alocados pelo controller ao descartar o widget
     _searchController.dispose();
     super.dispose();
   }
 
+  // Função responsável por filtrar os dados conforme o texto inserido
   void _onSearchChanged(String query) {
     final input = query.toLowerCase();
     setState(() {
+      // Filtra a lista de usuários pelo nome ou username
       _filteredUsers = _mockUsers.where((user) {
         return (user['name'] ?? '').toString().toLowerCase().contains(input) ||
             (user['username'] ?? '').toString().toLowerCase().contains(input);
       }).toList();
 
+      // Filtra a lista de posts pelo conteúdo ou nome do autor
       _filteredPosts = _mockPosts.where((post) {
         return (post['content'] ?? '').toString().toLowerCase().contains(
               input,
@@ -90,21 +103,24 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Captura o evento de voltar do dispositivo para alternar entre os modos de busca
     return WillPopScope(
       onWillPop: () async {
+        // Se estiver vendo a lista completa de usuários ou posts, retorna para o modo 'home'
         if (_currentMode != SearchMode.home) {
           setState(() => _currentMode = SearchMode.home);
           return false;
         }
-        return true;
+        return true; // Permite o comportamento padrão de voltar caso esteja no modo 'home'
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xFF4E342E),
+          backgroundColor: const Color(0xFF4E342E), // Cor tom café
           elevation: 0,
           automaticallyImplyLeading: false,
           title: Row(
             children: [
+              // Exibe o botão de voltar interno caso esteja no modo detalhado
               if (_currentMode != SearchMode.home) ...[
                 IconButton(
                   icon: const Icon(Icons.arrow_back, color: Color(0xFFEFEBE9)),
@@ -113,6 +129,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 const SizedBox(width: 10),
               ],
+              // Título dinâmico do AppBar dependendo do modo atual
               Text(
                 _currentMode == SearchMode.allUsers
                     ? 'Usuários'
@@ -127,6 +144,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ],
           ),
+          // Barra de pesquisa fixada na parte inferior da AppBar
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(60),
             child: Padding(
@@ -161,13 +179,17 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
+  // Alterna o corpo da tela com base no modo de busca ativo
   Widget _buildBody() {
     switch (_currentMode) {
       case SearchMode.allUsers:
+        // Renderiza a lista completa de usuários
         return SearchUsersList(users: _filteredUsers);
       case SearchMode.allPosts:
+        // Renderiza a lista completa de postagens
         return SearchPostsList(posts: _filteredPosts);
       case SearchMode.home:
+        // Renderiza o resumo com prévia de usuários e prévia de postagens
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
