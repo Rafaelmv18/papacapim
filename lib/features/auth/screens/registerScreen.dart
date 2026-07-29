@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Widget com estado (StatefulWidget) para gerenciar as variáveis da tela de cadastro
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -7,18 +8,23 @@ class RegisterScreen extends StatefulWidget {
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
+// Classe de estado da tela de Cadastro
 class _RegisterScreenState extends State<RegisterScreen> {
+  // Variáveis locais para armazenar nome, e-mail e senha do novo usuário
   String name = '';
   String email = '';
   String password = '';
 
   @override
   Widget build(BuildContext context) {
+    // Acessa o tema ativo da aplicação para aplicar cores e estilos
     final theme = Theme.of(context);
 
     return Scaffold(
+      // SafeArea para evitar sobreposição do conteúdo com entalhes ou barras do dispositivo
       body: SafeArea(
         child: Center(
+          // Permite rolar a tela se o teclado cobrir os campos em telas menores
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(
               horizontal: 24.0,
@@ -35,7 +41,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 16.0),
 
-                // Título Padronizado
+                // Título Padronizado da tela
                 Text(
                   'Criar Conta',
                   style: theme.textTheme.headlineMedium?.copyWith(
@@ -45,7 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 32.0),
 
-                // Campo Nome
+                // Campo de entrada para o Nome Completo
                 TextField(
                   onChanged: (text) => setState(() => name = text),
                   decoration: const InputDecoration(
@@ -55,9 +61,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 16.0),
 
+                // Campo de entrada para a Senha
                 TextField(
                   onChanged: (text) => setState(() => password = text),
-                  obscureText: true,
+                  obscureText: true, // Oculta o texto digitado
                   decoration: const InputDecoration(
                     labelText: 'Senha',
                     prefixIcon: Icon(Icons.lock_outline),
@@ -65,10 +72,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 16.0),
 
-                // Campo Senha
+                // Campo de entrada para Confirmar a Senha
                 TextField(
                   onChanged: (text) => setState(() => password = text),
-                  obscureText: true,
+                  obscureText: true, // Oculta o texto digitado
                   decoration: const InputDecoration(
                     labelText: 'Confirmar Senha',
                     prefixIcon: Icon(Icons.lock_outline),
@@ -76,13 +83,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 28.0),
 
-                // Botões de Ação
+                // Seção com os botões de ação na horizontal
                 Row(
                   children: [
-                    // Botão Voltar (Ação secundária)
+                    // Botão Voltar (Ação secundária com borda)
                     Expanded(
                       child: OutlinedButton(
                         onPressed: () {
+                          // Substitui a tela atual e direciona para o Login
                           Navigator.pushReplacementNamed(context, '/login');
                         },
                         style: OutlinedButton.styleFrom(
@@ -103,13 +111,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(width: 16.0),
 
-                    // Botão Finalizar (Ação principal)
+                    // Botão Finalizar (Ação principal preenchida)
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
+                          // Valida se todos os campos foram preenchidos (sem espaços vazios)
                           if (name.trim().isNotEmpty &&
                               email.trim().isNotEmpty &&
                               password.trim().isNotEmpty) {
+                            // Exibe SnackBar verde de sucesso
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
@@ -120,9 +130,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                             );
 
-                            // Retorna para a tela de Login
+                            // Retorna para a tela de Login na pilha de navegação
                             Navigator.pop(context);
                           } else {
+                            // Exibe SnackBar vermelha avisando sobre campos vazios
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Preencha todos os campos!'),

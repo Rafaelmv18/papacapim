@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Widget com estado (StatefulWidget) para gerenciar as variáveis da tela de login
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -7,7 +8,9 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
+// Classe de estado da tela de Login
 class _LoginScreenState extends State<LoginScreen> {
+  // Variáveis locais para armazenar o nome e a senha digitados pelo usuário
   String name = '';
   String password = '';
 
@@ -17,8 +20,10 @@ class _LoginScreenState extends State<LoginScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      // SafeArea evita que o conteúdo fique sob a barra de status do celular
       body: SafeArea(
         child: Center(
+          // Permite rolar a tela em dispositivos com resolução menor ou quando o teclado abre
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(
               horizontal: 24.0,
@@ -47,6 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // Campo de Nome
                 TextField(
+                  // Atualiza a variável 'name' sempre que o texto muda
                   onChanged: (text) => name = text,
                   decoration: const InputDecoration(
                     labelText: 'Nome',
@@ -57,8 +63,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // Campo de Senha
                 TextField(
+                  // Atualiza a variável 'password' sempre que o texto muda
                   onChanged: (text) => password = text,
-                  obscureText: true,
+                  obscureText:
+                      true, // Oculta os caracteres da senha com bolinhas
                   decoration: const InputDecoration(
                     labelText: 'Senha',
                     prefixIcon: Icon(Icons.lock_outline),
@@ -73,12 +81,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
+                          // Validação simples das credenciais simuladas
                           if (name == 'a' && password == 'a') {
+                            // Navega para a HomeScreen substituindo a rota atual
                             Navigator.pushReplacementNamed(
                               context,
                               '/homeScreen',
                             );
                           } else {
+                            // Exibe um aviso visual na parte inferior em caso de erro
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(

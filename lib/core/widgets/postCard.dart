@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:papacapim/core/theme/appColors.dart';
 import 'package:papacapim/core/widgets/avatarWidget.dart';
 
+// Widget com estado (StatefulWidget) responsável por renderizar o card individual de cada publicação
 class PostCard extends StatefulWidget {
   final String userName;
   final String userHandle;
@@ -38,7 +39,9 @@ class PostCard extends StatefulWidget {
   State<PostCard> createState() => _PostCardState();
 }
 
+// Classe de estado do PostCard
 class _PostCardState extends State<PostCard> {
+  // Variáveis de estado locais para gerenciar reatividade de interações
   bool isLiked = false;
   int currentLikes = 0;
   int currentComments = 0;
@@ -53,17 +56,19 @@ class _PostCardState extends State<PostCard> {
   @override
   void initState() {
     super.initState();
+    // Inicializa os contadores de curtidas e comentários com base nas propriedades recebidas
     currentLikes = widget.likesCount;
     currentComments = widget.commentsCount + _commentsList.length;
   }
 
-  // 💬 Função que abre a UI de Comentários
+  // 💬 Função que abre o modal inferior (BottomSheet) para exibição e criação de comentários
   void _openCommentsBottomSheet(BuildContext context) {
     final TextEditingController commentController = TextEditingController();
 
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true,
+      isScrollControlled:
+          true, // Permite que o modal ajuste sua altura quando o teclado abre
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -77,6 +82,7 @@ class _PostCardState extends State<PostCard> {
             top: 16,
           ),
 
+          // Preserva e atualiza o estado interno do BottomSheet sem reconstruir a tela inteira
           child: StatefulBuilder(
             builder: (BuildContext context, StateSetter setModalState) {
               return Container(
@@ -87,7 +93,7 @@ class _PostCardState extends State<PostCard> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Indicador de arraste
+                    // Indicador visual de arraste no topo do modal
                     Center(
                       child: Container(
                         width: 36,
@@ -109,7 +115,7 @@ class _PostCardState extends State<PostCard> {
                     ),
                     const SizedBox(height: 12),
 
-                    // Lista de Comentários existentes
+                    // Lista de Comentários existentes na publicação
                     Expanded(
                       child: _commentsList.isEmpty
                           ? const Center(
@@ -152,7 +158,7 @@ class _PostCardState extends State<PostCard> {
                     ),
                     const SizedBox(height: 8),
 
-                    // Campo para digitar novo comentário
+                    // Campo de entrada de texto e botão para enviar um novo comentário
                     Row(
                       children: [
                         Expanded(
@@ -181,11 +187,13 @@ class _PostCardState extends State<PostCard> {
                         IconButton(
                           onPressed: () {
                             if (commentController.text.trim().isNotEmpty) {
+                              // Atualiza a lista interna do modal
                               setModalState(() {
                                 _commentsList.add(
                                   commentController.text.trim(),
                                 );
                               });
+                              // Atualiza o contador visual na postagem pai
                               setState(() {
                                 currentComments++;
                               });
@@ -223,9 +231,10 @@ class _PostCardState extends State<PostCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ─── CABEÇALHO ───
+          // ─── CABEÇALHO: Avatar, Nome, Username, Data e Botão Seguir ───
           Row(
             children: [
+              // Renderiza CircleAvatar se houver URL de imagem, caso contrário utiliza AvatarWidget
               widget.userImageUrl != null
                   ? CircleAvatar(
                       radius: 20,
@@ -264,6 +273,7 @@ class _PostCardState extends State<PostCard> {
                 widget.postDate,
                 style: const TextStyle(color: AppColors.muted, fontSize: 12),
               ),
+              // Exibe botão condicional para seguir/deixar de seguir
               if (widget.showFollowButton) ...[
                 const SizedBox(width: 8),
                 GestureDetector(
@@ -286,7 +296,7 @@ class _PostCardState extends State<PostCard> {
           ),
           const SizedBox(height: 10),
 
-          // ─── CONTEÚDO ───
+          // ─── CONTEÚDO: Descrição do Post e Imagem Anexada ───
           Text(
             widget.description,
             style: const TextStyle(
@@ -313,10 +323,10 @@ class _PostCardState extends State<PostCard> {
           const Divider(color: Colors.white12, height: 1),
           const SizedBox(height: 8),
 
-          // ─── RODAPÉ: Curtir, Comentar, Compartilhar e Deletar ───
+          // ─── RODAPÉ: Botões de Ação (Curtir, Comentar, Compartilhar e Deletar) ───
           Row(
             children: [
-              // Curtir
+              // Ação de Curtir/Descurtir post
               GestureDetector(
                 onTap: () {
                   setState(() {
@@ -344,7 +354,7 @@ class _PostCardState extends State<PostCard> {
               ),
               const SizedBox(width: 24),
 
-              // Comentários / Respostas (🚀 Agora funcional abre o modal)
+              // Ação de Comentários / Respostas (Abre o BottomSheet)
               GestureDetector(
                 onTap: () => _openCommentsBottomSheet(context),
                 child: Row(
@@ -367,7 +377,7 @@ class _PostCardState extends State<PostCard> {
               ),
               const SizedBox(width: 24),
 
-              // Compartilhar
+              // Ação de Compartilhar
               GestureDetector(
                 onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -389,7 +399,7 @@ class _PostCardState extends State<PostCard> {
 
               const Spacer(),
 
-              // Deletar
+              // Ação condicional de Deletar publicação (Apenas para posts próprios)
               if (widget.isOwnPost && widget.onDelete != null)
                 GestureDetector(
                   onTap: widget.onDelete,

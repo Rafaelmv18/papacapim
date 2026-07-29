@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:papacapim/core/theme/appColors.dart';
 import '../../../core/widgets/avatarWidget.dart';
 
+// Widget com estado (StatefulWidget) para gerenciar a criação e publicação de posts
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key});
 
@@ -11,21 +12,26 @@ class CreatePostScreen extends StatefulWidget {
   State<CreatePostScreen> createState() => _CreatePostScreenState();
 }
 
+// Classe de estado da tela de criação de postagem
 class _CreatePostScreenState extends State<CreatePostScreen> {
+  // Controller para o campo de entrada do texto do post
   final TextEditingController _textController = TextEditingController();
-  
-  // 📷 Armazena o arquivo de imagem selecionado ou tirado na câmera
+
+  // Armazena o arquivo de imagem selecionado ou tirado na câmera
   File? _selectedImage;
+  // Instância do ImagePicker para acessar a galeria ou a câmera nativa
   final ImagePicker _picker = ImagePicker();
+  // Limite máximo de caracteres permitidos na publicação
   final int maxChars = 280;
 
   @override
   void dispose() {
+    // Libera os recursos alocados pelo controller quando a tela é descartada
     _textController.dispose();
     super.dispose();
   }
 
-  // 📸 Função para obter a imagem da Câmera ou da Galeria
+  // Função assíncrona para obter a imagem da Câmera ou da Galeria
   Future<void> _pickImage(ImageSource source) async {
     final XFile? pickedFile = await _picker.pickImage(
       source: source,
@@ -34,6 +40,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       imageQuality: 85,
     );
 
+    // Se uma imagem for capturada ou escolhida, atualiza a variável de estado
     if (pickedFile != null) {
       setState(() {
         _selectedImage = File(pickedFile.path);
@@ -41,7 +48,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     }
   }
 
-  // 📋 Modal com as opções de Câmera e Galeria
+  // Modal inferior (BottomSheet) com as opções de Câmera, Galeria ou Remoção
   void _showPhotoOptions() {
     showModalBottomSheet(
       context: context,
@@ -56,6 +63,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Indicador visual no topo do BottomSheet
                 Container(
                   width: 36,
                   height: 4,
@@ -65,34 +73,52 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
+                // Opção de tirar foto com a Câmera
                 ListTile(
-                  leading: const Icon(Icons.camera_alt, color: AppColors.primary),
+                  leading: const Icon(
+                    Icons.camera_alt,
+                    color: AppColors.primary,
+                  ),
                   title: const Text(
                     'Tirar foto com a Câmera',
-                    style: TextStyle(color: AppColors.text, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: AppColors.text,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
-                    _pickImage(ImageSource.camera); // 👈 Abre a Câmera
+                    _pickImage(ImageSource.camera); // Abre a Câmera
                   },
                 ),
+                // Opção de escolher da Galeria
                 ListTile(
-                  leading: const Icon(Icons.photo_library, color: AppColors.primary),
+                  leading: const Icon(
+                    Icons.photo_library,
+                    color: AppColors.primary,
+                  ),
                   title: const Text(
                     'Escolher da Galeria',
-                    style: TextStyle(color: AppColors.text, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: AppColors.text,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
-                    _pickImage(ImageSource.gallery); // 👈 Abre a Galeria
+                    _pickImage(ImageSource.gallery); // Abre a Galeria
                   },
                 ),
+                // Opção condicional para remover a foto selecionada
                 if (_selectedImage != null)
                   ListTile(
                     leading: const Icon(Icons.delete, color: Colors.redAccent),
                     title: const Text(
                       'Remover foto',
-                      style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     onTap: () {
                       Navigator.pop(context);
@@ -111,8 +137,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Cálculo dos caracteres restantes permitidos
     final remaining = maxChars - _textController.text.length;
-    final canPublish = _textController.text.trim().isNotEmpty || _selectedImage != null;
+    // Validação que permite a publicação se houver texto ou foto anexada
+    final canPublish =
+        _textController.text.trim().isNotEmpty || _selectedImage != null;
 
     return Scaffold(
       appBar: AppBar(
@@ -122,6 +151,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         actions: [
+          // Botão superior para Publicar
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: ElevatedButton(
@@ -152,7 +182,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       ),
       body: Column(
         children: [
-          // Área de Exibição / Seleção de Foto
+          // Área Superior: Exibição da foto selecionada ou placeholder
           GestureDetector(
             onTap: _showPhotoOptions,
             child: Container(
@@ -162,19 +192,22 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               child: _selectedImage != null
                   ? Stack(
                       children: [
+                        // Preenche a área do container com a imagem escolhida
                         Positioned.fill(
-                          child: Image.file(
-                            _selectedImage!,
-                            fit: BoxFit.cover,
-                          ),
+                          child: Image.file(_selectedImage!, fit: BoxFit.cover),
                         ),
+                        // Botão 'X' flutuante para remover a foto rapidamente
                         Positioned(
                           top: 10,
                           right: 10,
                           child: CircleAvatar(
                             backgroundColor: Colors.black54,
                             child: IconButton(
-                              icon: const Icon(Icons.close, color: Colors.white, size: 20),
+                              icon: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                                size: 20,
+                              ),
                               onPressed: () {
                                 setState(() {
                                   _selectedImage = null;
@@ -196,14 +229,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         SizedBox(height: 8),
                         Text(
                           'Toque para adicionar uma foto',
-                          style: TextStyle(color: AppColors.muted, fontSize: 13),
+                          style: TextStyle(
+                            color: AppColors.muted,
+                            fontSize: 13,
+                          ),
                         ),
                       ],
                     ),
             ),
           ),
 
-          // Campo de Texto da Postagem
+          // Área Central: Campo de entrada de texto e Avatar do autor
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(14.0),
@@ -242,7 +278,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             ),
           ),
 
-          // Rodapé com Botão de Foto e Contador de Caracteres
+          // Rodapé: Botão para gerenciar fotos e contador de caracteres
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: const BoxDecoration(
@@ -251,8 +287,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                // Botões de mídia
                 TextButton.icon(
-                  onPressed: _showPhotoOptions, // 👈 Abre o menu de Câmera/Galeria
+                  onPressed:
+                      _showPhotoOptions, //  Abre o menu de Câmera/Galeria
                   icon: const Icon(
                     Icons.photo_camera,
                     color: AppColors.primary,
@@ -263,6 +301,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     style: const TextStyle(color: AppColors.primary),
                   ),
                 ),
+                // Contador visual dinâmico de caracteres
                 Text(
                   '$remaining',
                   style: TextStyle(

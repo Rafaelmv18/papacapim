@@ -4,6 +4,7 @@ import 'package:papacapim/features/search/screens/searchScreen.dart';
 import 'package:papacapim/features/post_creation/screens/createPostScreen.dart';
 import 'package:papacapim/features/profile/screens/profileScreen.dart';
 
+// Widget com estado (StatefulWidget) para gerenciar a navegação principal da aplicação via BottomNavigationBar
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -11,6 +12,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+// Classe de estado da HomeScreen
 class _HomeScreenState extends State<HomeScreen> {
   // 1. Variável que guarda o índice da aba atualmente selecionada (0 = Feed)
   int _currentIndex = 0;

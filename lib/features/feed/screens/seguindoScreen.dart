@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:papacapim/core/widgets/postCard.dart';
 import 'package:papacapim/features/profile/screens/profileUser.dart';
 
+// Widget sem estado (StatelessWidget) responsável por exibir a aba 'Seguindo' do feed
 class SeguindoScreen extends StatelessWidget {
   const SeguindoScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Lista simulada (mock) contendo as postagens dos usuários que você segue
     final List<Map<String, dynamic>> mockPosts = [
       {
         'userName': 'Ana Júlia',
@@ -48,11 +50,15 @@ class SeguindoScreen extends StatelessWidget {
       },
     ];
 
+    // Construtor otimizado para renderizar a lista de postagens
     return ListView.builder(
-      itemCount: mockPosts.length,
+      itemCount:
+          mockPosts.length, // Define a quantidade total de itens na lista
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       itemBuilder: (context, index) {
         final post = mockPosts[index];
+
+        // Detecta o clique no card do post para redirecionar para a tela de perfil
         return GestureDetector(
           onTap: () {
             // Fecha o teclado se estiver aberto
@@ -64,6 +70,7 @@ class SeguindoScreen extends StatelessWidget {
               MaterialPageRoute(builder: (context) => const ProfileUser()),
             );
           },
+          // Componente individual da postagem repassando os dados do mock
           child: PostCard(
             userName: post['userName']!,
             userHandle: post['userHandle'] ?? '',
@@ -73,7 +80,8 @@ class SeguindoScreen extends StatelessWidget {
             postImageUrl: post['postImageUrl'],
             likesCount: post['likes'] ?? 0,
             commentsCount: post['comments'] ?? 0,
-            showFollowButton: false,
+            showFollowButton:
+                false, // Botão de seguir desativado na aba 'Seguindo'
           ),
         );
       },
