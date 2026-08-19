@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:papacapim/features/auth/services/authService.dart';
 
 // Widget com estado (StatefulWidget) para gerenciar as variáveis da tela de login
 class LoginScreen extends StatefulWidget {
@@ -13,6 +14,50 @@ class _LoginScreenState extends State<LoginScreen> {
   // Variáveis locais para armazenar o nome e a senha digitados pelo usuário
   String name = '';
   String password = '';
+  bool _isLoading = false;
+
+  Future<void> _login() async {
+    if (name.trim().isEmpty || password.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, preencha todos os campos.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final result = await AuthService.login(name.trim(), password.trim());
+
+    setState(() => _isLoading = false);
+
+    if (!mounted) return;
+
+    if (result['success']) {
+      // Login bem-sucedido! Aqui você pode salvar o token em storage se necessário
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login realizado com sucesso!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 1),
+        ),
+      );
+
+      Navigator.pushReplacementNamed(context, '/homeScreen');
+    } else {
+      // Exibe a mensagem de erro retornada pela API
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message'] ?? 'Nome ou senha incorretos'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,27 +125,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Botão Entrar / Login
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          // Validação simples das credenciais simuladas
-                          if (name == 'a' && password == 'a') {
-                            // Navega para a HomeScreen substituindo a rota atual
-                            Navigator.pushReplacementNamed(
-                              context,
-                              '/homeScreen',
-                            );
-                          } else {
-                            // Exibe um aviso visual na parte inferior em caso de erro
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Nome ou senha incorretos',
-                                ), // 👈 Mensagem atualizada
-                                backgroundColor: Colors.redAccent,
-                              ),
-                            );
-                          }
-                        },
-                        child: const Text('Entrar'),
+                        onPressed: _isLoading ? null : _login,
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.0,
+                                ),
+                              )
+                            : const Text('Entrar'),
                       ),
                     ),
                     const SizedBox(width: 16.0),
@@ -108,10 +143,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Botão Cadastrar
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: () {
-                          // Usamos pushNamed para permitir que o usuário volte ao Login
-                          Navigator.pushReplacementNamed(context, '/register');
-                        },
+                        onPressed: _isLoading
+                            ? null
+                            : () => Navigator.pushReplacementNamed(
+                                context,
+                                '/register',
+                              ),
+                        // Usamos pushNamed para permitir que o usuário volte ao Login
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size.fromHeight(48),
                           side: BorderSide(color: theme.colorScheme.primary),
