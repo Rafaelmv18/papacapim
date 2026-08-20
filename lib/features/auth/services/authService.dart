@@ -36,12 +36,11 @@ class AuthService {
     }
   }
 
-  /// Realiza o cadastro de um novo usuário na API
   static Future<Map<String, dynamic>> register({
     required String name,
     required String login,
     required String password,
-    required String passwordConfirmation,
+    required String confirmPassword,
   }) async {
     final url = Uri.parse('$baseUrl/users');
 
@@ -53,31 +52,45 @@ class AuthService {
           'Accept': 'application/json',
         },
         body: jsonEncode({
-          'user': {
-            'name': name,
-            'login': login,
-            'password': password,
-            'password_confirmation': passwordConfirmation,
-          },
+          'name': name,
+          'login': login,
+          'password': password,
+          'password_confirmation': confirmPassword,
         }),
       );
 
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
-        return {'success': true, 'data': data};
+        return {'success': true, 'message': 'Usuário registrado com sucesso!'};
       } else {
-        // Trata erros de validação retornados pela API (ex: login já em uso ou senha curta)
-        String errorMessage = 'Erro ao cadastrar.';
+        // Converte o objeto de erro da API (ex: {"login": ["has already been taken"]}) em texto legível
+        String errorMessage = 'Falha no registro.';
+
         if (data is Map<String, dynamic>) {
-          errorMessage = data.entries
-              .map((e) => '${e.key}: ${(e.value as List).join(", ")}')
-              .join('\n');
+          if (data.containsKey('message')) {
+            errorMessage = data['message'];
+          } else {
+            errorMessage = data.entries
+                .map((entry) {
+                  final field = entry.key;
+                  final errors = entry.value;
+                  if (errors is List) {
+                    return '$field: ${errors.join(", ")}';
+                  }
+                  return '$field: $errors';
+                })
+                .join('\n');
+          }
         }
+
         return {'success': false, 'message': errorMessage};
       }
     } catch (e) {
-      return {'success': false, 'message': 'Erro de conexão com o servidor.'};
+      return {
+        'success': false,
+        'message': 'Erro de conexão com o servidor: $e',
+      };
     }
   }
 

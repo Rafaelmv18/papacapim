@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:papacapim/features/auth/services/authService.dart';
 
-// Widget com estado (StatefulWidget) para gerenciar as variáveis da tela de cadastro
+// Widget com estado (StatefulWidget) para gerenciar o formulário de cadastro
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -10,21 +11,103 @@ class RegisterScreen extends StatefulWidget {
 
 // Classe de estado da tela de Cadastro
 class _RegisterScreenState extends State<RegisterScreen> {
-  // Variáveis locais para armazenar nome, e-mail e senha do novo usuário
-  String name = '';
-  String email = '';
-  String password = '';
+  // Controladores de texto para capturar as entradas do usuário
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _loginController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  // Flag para controle do estado visual de carregamento
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    // Libera os recursos alocados pelos controladores
+    _nameController.dispose();
+    _loginController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  // Função assíncrona responsável por validar e enviar o cadastro à API
+  Future<void> _handleRegister() async {
+    final name = _nameController.text.trim();
+    final login = _loginController.text.trim();
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    // 1. Validação básica de campos em branco
+    if (name.isEmpty ||
+        login.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Preencha todos os campos!'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    // 2. Validação de confirmação de senha
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('As senhas não coincidem!'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    // Inicia o estado de carregamento
+    setState(() => _isLoading = true);
+
+    final result = await AuthService.register(
+      name: name,
+      login: login,
+      password: password,
+      confirmPassword: confirmPassword,
+    );
+
+    // Finaliza o carregamento
+    setState(() => _isLoading = false);
+
+    if (!mounted) return;
+
+    // 3. Verifica o resultado da API
+    if (result['success']) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Cadastro realizado com sucesso! Faça seu login.'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      // Retorna para a tela de Login
+      Navigator.pushReplacementNamed(context, '/login');
+    } else {
+      // Exibe erros de validação vindos do backend
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message'] ?? 'Falha ao criar conta.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Acessa o tema ativo da aplicação para aplicar cores e estilos
     final theme = Theme.of(context);
 
     return Scaffold(
-      // SafeArea para evitar sobreposição do conteúdo com entalhes ou barras do dispositivo
       body: SafeArea(
         child: Center(
-          // Permite rolar a tela se o teclado cobrir os campos em telas menores
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(
               horizontal: 24.0,
@@ -36,12 +119,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // Logo da aplicação
                 Image.network(
                   'https://img.icons8.com/3d-fluency/512/duck.png',
-                  width: 130,
-                  height: 130,
+                  width: 110,
+                  height: 110,
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 12.0),
 
-                // Título Padronizado da tela
+                // Título da tela
                 Text(
                   'Criar Conta',
                   style: theme.textTheme.headlineMedium?.copyWith(
@@ -49,50 +132,62 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 32.0),
+                const SizedBox(height: 24.0),
 
-                // Campo de entrada para o Nome Completo
+                // Campo: Nome Completo
                 TextField(
-                  onChanged: (text) => setState(() => name = text),
+                  controller: _nameController,
                   decoration: const InputDecoration(
                     labelText: 'Nome completo',
+                    prefixIcon: Icon(Icons.badge_outlined),
+                  ),
+                ),
+                const SizedBox(height: 14.0),
+
+                // Campo: Nome de Usuário (Login)
+                TextField(
+                  controller: _loginController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nome de usuário (Login)',
                     prefixIcon: Icon(Icons.person_outline),
                   ),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 14.0),
 
-                // Campo de entrada para a Senha
+                // Campo: Senha
                 TextField(
-                  onChanged: (text) => setState(() => password = text),
-                  obscureText: true, // Oculta o texto digitado
+                  controller: _passwordController,
+                  obscureText: true,
                   decoration: const InputDecoration(
                     labelText: 'Senha',
                     prefixIcon: Icon(Icons.lock_outline),
                   ),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 14.0),
 
-                // Campo de entrada para Confirmar a Senha
+                // Campo: Confirmar Senha
                 TextField(
-                  onChanged: (text) => setState(() => password = text),
-                  obscureText: true, // Oculta o texto digitado
+                  controller: _confirmPasswordController,
+                  obscureText: true,
                   decoration: const InputDecoration(
                     labelText: 'Confirmar Senha',
-                    prefixIcon: Icon(Icons.lock_outline),
+                    prefixIcon: Icon(Icons.lock_reset_outlined),
                   ),
                 ),
-                const SizedBox(height: 28.0),
+                const SizedBox(height: 24.0),
 
-                // Seção com os botões de ação na horizontal
+                // Seção de botões na horizontal
                 Row(
                   children: [
-                    // Botão Voltar (Ação secundária com borda)
+                    // Botão Voltar
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: () {
-                          // Substitui a tela atual e direciona para o Login
-                          Navigator.pushReplacementNamed(context, '/login');
-                        },
+                        onPressed: _isLoading
+                            ? null
+                            : () => Navigator.pushReplacementNamed(
+                                context,
+                                '/login',
+                              ),
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size.fromHeight(48),
                           side: BorderSide(color: theme.colorScheme.primary),
@@ -111,39 +206,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(width: 16.0),
 
-                    // Botão Finalizar (Ação principal preenchida)
+                    // Botão Finalizar (Criar Conta)
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          // Valida se todos os campos foram preenchidos (sem espaços vazios)
-                          if (name.trim().isNotEmpty &&
-                              email.trim().isNotEmpty &&
-                              password.trim().isNotEmpty) {
-                            // Exibe SnackBar verde de sucesso
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Cadastro realizado com sucesso!',
+                        onPressed: _isLoading ? null : _handleRegister,
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(48),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
                                 ),
-                                backgroundColor: Colors.green,
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
-
-                            // Retorna para a tela de Login na pilha de navegação
-                            Navigator.pop(context);
-                          } else {
-                            // Exibe SnackBar vermelha avisando sobre campos vazios
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Preencha todos os campos!'),
-                                backgroundColor: Colors.redAccent,
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
-                          }
-                        },
-                        child: const Text('Finalizar'),
+                              )
+                            : const Text('Finalizar'),
                       ),
                     ),
                   ],

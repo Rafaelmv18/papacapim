@@ -12,12 +12,12 @@ class LoginScreen extends StatefulWidget {
 // Classe de estado da tela de Login
 class _LoginScreenState extends State<LoginScreen> {
   // Variáveis locais para armazenar o nome e a senha digitados pelo usuário
-  String name = '';
+  String login = '';
   String password = '';
   bool _isLoading = false;
 
   Future<void> _login() async {
-    if (name.trim().isEmpty || password.trim().isEmpty) {
+    if (login.trim().isEmpty || password.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Por favor, preencha todos os campos.'),
@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
 
-    final result = await AuthService.login(name.trim(), password.trim());
+    final result = await AuthService.login(login.trim(), password.trim());
 
     setState(() => _isLoading = false);
 
@@ -97,10 +97,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // Campo de Nome
                 TextField(
-                  // Atualiza a variável 'name' sempre que o texto muda
-                  onChanged: (text) => name = text,
+                  // Atualiza a variável 'login' sempre que o texto muda
+                  onChanged: (text) => login = text,
                   decoration: const InputDecoration(
-                    labelText: 'Nome',
+                    labelText: 'Login',
                     prefixIcon: Icon(Icons.person_outline),
                   ),
                 ),
